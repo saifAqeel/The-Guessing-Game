@@ -9,9 +9,11 @@ const lowOrHi = document.querySelector('.lowOrHi');
 
 const p = document.createElement('p');
 
+let bgChanger;
 let prevGuess = [];
-let numGuess = 1;
+let numGuess = 0;
 let playGame = true;
+let chancesLeft = 10;
 
 if (playGame) {
   submit.addEventListener('click', function (e) {
@@ -31,7 +33,7 @@ function validateGuess(guess) {
     alert('The number must be above 1');
   } else {
     prevGuess.push(guess);
-    if (numGuess >= 10) {
+    if (chancesLeft === 0) {
       displayGuess(guess);
       displayMessage(`Game Over!! The Answer was ${randomNumber}`);
       endGame();
@@ -44,6 +46,18 @@ function validateGuess(guess) {
 function evaluateGuess(guess) {
   if (guess === randomNumber) {
     displayMessage(`You Guessed It Right!!`);
+    //Background color changing effect
+    bgChanger= setInterval(function(){
+      const randomColor = function(){
+        const hex = '0123456789ABCDEF';
+        let color ='#'
+        for(let i =0;i<6;i++){
+          color+=hex[Math.floor(Math.random()*16)]
+        }
+        return color;
+      }
+      document.body.style.backgroundColor = randomColor()
+    },500)
     endGame();
   } else if (guess < randomNumber) {
     displayMessage(`Your guess is LOW!`);
@@ -55,40 +69,21 @@ function displayGuess(guess) {
   userInput.value = '';
   guessSlot.innerHTML += `${guess}  `;
   numGuess++;
-  remaining.innerHTML = `${10 - numGuess}`;
+  chancesLeft = 10 - numGuess;
+  remaining.innerHTML = chancesLeft;
 }
 function displayMessage(message) {
   lowOrHi.innerHTML = `<h2>${message}</h2>`;
 }
-// function newGame() {
-//   const newGameButton = document.querySelector('#newGame');
-//   newGameButton.addEventListener('click', function (e) {
-//     e.preventDefault();
-//     randomNumber = parseInt(Math.random() * 100 + 1);
-//     prevGuess = [];
-//     numGuess = 1;
-//     guessSlot.innerHTML = '';
-//     remaining.innerHTML = `${10 - numGuess}`;
-//     userInput.removeAttribute('disabled');
-//     startOver.removeChild(p);
-//     playGame = true;
-//   });
-// }
-// function endGame() {
-//   userInput.value = ``;
-//   userInput.setAttribute('disabled', '');
-//   p.classList.add('button');
-//   p.innerHTML = `<h2 id="newGame">Start New Game</h2>`;
-//   startOver.appendChild(p);
-//   playGame = false;
-//   console.log(ended)
-//   newGame();
-// }
-//chatGPT
+
+
 function newGame() {
   const newGameButton = document.querySelector('#newGame');
   newGameButton.addEventListener('click', function (e) {
     e.preventDefault();
+    clearInterval(bgChanger);
+    document.body.style.backgroundColor= '#212121';
+    lowOrHi.innerHTML = ``;
     randomNumber = parseInt(Math.random() * 100 + 1);
     prevGuess = [];
     numGuess = 1;
